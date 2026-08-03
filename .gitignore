@@ -1,0 +1,23 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+
+node_modules/
+.venv/
+venv/
+
+.career-coach/sessions/
+.career-coach/outputs/
+.career-coach/jobs/
+.cache/
+
+*.log
+*.tmp
+*.bak
+
+# Private career files should live outside this repo or be explicitly ignored.
+*.docx
+*.pdf
+*.xlsx
+*.xlsm

@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+require('./career_agent/cli').main().then((code) => {
+  process.exitCode = code;
+});
