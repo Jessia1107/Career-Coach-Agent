@@ -12,6 +12,12 @@ const {
   saveTracker,
 } = require('./tracker');
 const { runInterviewReview, runInterviewStart, runJudgeJob } = require('./workflows');
+const {
+  initProfile,
+  profileStatus,
+  renderInitReport,
+  renderProfileStatus,
+} = require('./profile');
 
 function parseArgs(argv) {
   const args = [...argv];
@@ -46,6 +52,18 @@ function parseArgs(argv) {
       options.now = args[++index];
     } else if (token === '--force') {
       options.force = true;
+    } else if (token === '--keywords') {
+      options.keywords = args[++index];
+    } else if (token === '--location') {
+      options.location = args[++index];
+    } else if (token === '--limit') {
+      options.limit = Number(args[++index]);
+    } else if (token === '--jobage') {
+      options.jobage = Number(args[++index]);
+    } else if (token === '--experience-level') {
+      options.experienceLevel = args[++index];
+    } else if (token === '--remote') {
+      options.remote = args[++index];
     } else {
       options._.push(token);
     }
@@ -59,6 +77,7 @@ function usage() {
     'Career Coach CLI Agent',
     '',
     'Commands:',
+    '  ./career-coach init',
     '  ./career-coach chat [--session default]',
     '  ./career-coach ask "generate branding" [--session default]',
     '  ./career-coach run --jd jd.txt --resume resume.txt [--session default]',
@@ -70,12 +89,19 @@ function usage() {
     '  ./career-coach cleanup [--force]',
     '  ./career-coach status [--session default]',
     '  ./career-coach export [--session default]',
+    '  ./career-coach discover [--keywords "..."] [--location "..."] [--limit <number>]',
+    '',
+    'First run:',
+    '  ./career-coach init   scaffolds .career-coach/profile/ from setup/templates/',
+    '                        then ask your AI assistant to use the',
+    '                        career-profile-builder skill to fill it in.',
     '',
     'Optional local model provider:',
     '  CAREER_COACH_PROVIDER_COMMAND=<command>',
     '  CAREER_COACH_PROVIDER_ARGS="<args>"',
   ].join('\n');
 }
+
 
 async function readTextFile(filePath) {
   if (!filePath) return '';
@@ -124,9 +150,16 @@ async function main(argv = process.argv.slice(2), runtime = {}) {
       return 0;
     }
 
+    if (command === 'init') {
+      const result = await initProfile(agentOptions);
+      stdout.write(`${renderInitReport(result)}\n`);
+      return 0;
+    }
+
     if (command === 'status') {
       const session = await loadSession(sessionId, agentOptions);
-      stdout.write(`${formatStatus(session)}\n`);
+      const profile = await profileStatus(agentOptions);
+      stdout.write(`${formatStatus(session)}\n\n${renderProfileStatus(profile)}\n`);
       return 0;
     }
 
@@ -211,6 +244,28 @@ async function main(argv = process.argv.slice(2), runtime = {}) {
       stdout.write(result.skipped
         ? 'Cleanup skipped: it ran less than 30 days ago.\n'
         : `Cleanup complete: ${result.archived} job(s) archived.\n`);
+      return 0;
+    }
+
+    if (command === 'discover') {
+      const { scrapeJobs } = require('./linkedin_scraper');
+      stdout.write('Scanning public LinkedIn listings...\n');
+      const results = await scrapeJobs({
+        keywords: options.keywords || 'quantitative analyst',
+        location: options.location || 'New York, NY',
+        limit: options.limit || 5,
+        jobage: options.jobage,
+        experienceLevel: options.experienceLevel,
+        remote: options.remote
+      });
+      if (results.length === 0) {
+        stdout.write('No new jobs found.\n');
+        return 0;
+      }
+      stdout.write(`Found ${results.length} jobs:\n`);
+      for (const job of results) {
+        stdout.write(`- [${job.company || 'Unknown'}] ${job.title} (${job.location || 'Unknown'})\n  URL: ${job.url}\n`);
+      }
       return 0;
     }
 

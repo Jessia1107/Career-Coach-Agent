@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Career Coach Resume Input",
+  "description": "Structured master resume consumed by the resume-generator skill. Tailored per-application copies are derived from this file; never edit generated output back into it.",
+  "type": "object",
+  "required": ["contact", "education", "experience", "skills"],
+  "properties": {
+    "contact": {
+      "type": "object",
+      "required": ["name", "email"],
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "linkedin": { "type": "string" },
+        "website": { "type": "string" },
+        "location": { "type": "string" }
+      }
+    },
+    "education": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/education" }
+    },
+    "credentials": {
+      "description": "Certifications, exams, or licenses as a single summary line. Use an empty string if not applicable.",
+      "type": "string"
+    },
+    "experience": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/experience" }
+    },
+    "projects": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/project" }
+    },
+    "skills": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "string" } }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "education": {
+      "type": "object",
+      "required": ["institution", "degree"],
+      "properties": {
+        "institution": { "type": "string" },
+        "location": { "type": "string" },
+        "degree": { "type": "string" },
+        "dates": { "type": "string" },
+        "gpa": { "type": "string" },
+        "details": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "experience": {
+      "type": "object",
+      "required": ["organization", "title", "bullets"],
+      "properties": {
+        "organization": { "type": "string" },
+        "location": { "type": "string" },
+        "title": { "type": "string" },
+        "dates": { "type": "string" },
+        "employmentType": {
+          "type": "string",
+          "enum": ["full-time", "part-time", "intern", "contract", "practicum"]
+        },
+        "bullets": {
+          "description": "Action + method + quantified result. Most JD-relevant bullet first; the one-page fitter drops trailing bullets.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "required": ["name", "bullets"],
+      "properties": {
+        "name": { "type": "string" },
+        "dates": { "type": "string" },
+        "bullets": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

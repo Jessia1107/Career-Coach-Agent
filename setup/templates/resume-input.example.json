@@ -1,0 +1,64 @@
+{
+  "contact": {
+    "name": "Your Name",
+    "email": "you@example.com",
+    "phone": "000-000-0000",
+    "linkedin": "linkedin.com/in/your-handle",
+    "location": "City, ST"
+  },
+  "education": [
+    {
+      "institution": "UNIVERSITY NAME, School or College",
+      "location": "City, ST",
+      "degree": "Master of Science in Your Field",
+      "dates": "Month YYYY - Month YYYY",
+      "details": ["Concentration or honors", "Key coursework: A, B, C"]
+    },
+    {
+      "institution": "UNDERGRADUATE UNIVERSITY",
+      "location": "City, ST",
+      "degree": "Bachelor of Science in Your Field",
+      "dates": "Month YYYY - Month YYYY",
+      "gpa": "3.9 / 4.0",
+      "details": ["Relevant coursework: A, B, C"]
+    }
+  ],
+  "credentials": "Certification A passed Month YYYY; Certification B passed Month YYYY",
+  "experience": [
+    {
+      "organization": "Most Recent Employer",
+      "location": "City, ST",
+      "title": "Your Title",
+      "dates": "Month YYYY - Present",
+      "employmentType": "full-time",
+      "bullets": [
+        "Built X in Python/SQL to solve Y, processing 20,000+ records and cutting a 6-hour manual process to 15 minutes.",
+        "Designed Z validation checks that surfaced N data anomalies before downstream reporting."
+      ]
+    },
+    {
+      "organization": "Earlier Employer",
+      "location": "City, ST",
+      "title": "Intern Title",
+      "dates": "Month YYYY - Month YYYY",
+      "employmentType": "intern",
+      "bullets": [
+        "Automated a recurring report used by a team of N, reducing turnaround from days to hours."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Project Name",
+      "bullets": [
+        "Implemented X using Y to answer Z; result was measurable outcome."
+      ]
+    }
+  ],
+  "skills": {
+    "Programming": ["Python", "SQL", "R"],
+    "Modeling & Analytics": ["scikit-learn", "statsmodels"],
+    "Data & BI": ["PostgreSQL", "Tableau"],
+    "Languages": ["English"]
+  }
+}

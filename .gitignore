@@ -1,23 +1,61 @@
+# OS / editor
 .DS_Store
+.gitignore 2
+.idea/
+.vscode/
+
+# Secrets
 .env
 .env.*
 !.env.example
 
+# Dependencies
 node_modules/
 .venv/
 venv/
+__pycache__/
+*.pyc
 
-.career-coach/sessions/
-.career-coach/outputs/
-.career-coach/jobs/
+# Local application state — personal profile, sessions, trackers, generated resumes
+.career-coach/
 .cache/
 
+# Logs and temp
 *.log
 *.tmp
 *.bak
 
-# Private career files should live outside this repo or be explicitly ignored.
+# Personal career documents must never enter this repo
 *.docx
+*.dotx
 *.pdf
 *.xlsx
 *.xlsm
+*.csv
+
+# Scratch: per-application tailored resumes, scraped jobs, evaluation output.
+# All of it derives from personal data.
+scratch/
+*_resume*.json
+*_evaluated*.json
+*_jobs*.json
+*_check*.json
+*_recommendations*.json
+*_scraped*.json
+today_*.json
+
+# Web UI — not part of the published CLI release
+index.html
+server.js
+css/
+js/
+requirements/
+*-provider.js
+tests/gemini_response_utils.test.js
+tests/practice_resource_utils.test.js
+tests/step3_state_utils.test.js
+tests/dummy_transcript.txt
+
+# Templates and examples are explicitly tracked despite the rules above
+!setup/templates/
+!setup/templates/*.json

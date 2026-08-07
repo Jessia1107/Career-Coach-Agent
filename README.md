@@ -26,12 +26,36 @@ It combines a lightweight Node.js CLI, persistent local state, structured prompt
 
 ## Quick start
 
+This repository ships with **no personal data**. The skills describe *how* to evaluate jobs and write resumes; they read *who you are* from three profile files you generate on first run.
+
 ```bash
 cd career-coach-agent
+./career-coach init
+```
+
+`init` scaffolds `.career-coach/profile/` from the blank templates in `setup/templates/`. Then let the agent fill them in — open the repository in your AI coding assistant and say:
+
+```
+Use the career-profile-builder skill to build my career profile.
+```
+
+That runs a short structured interview (about 5–7 turns of batched questions) covering education, work history, career direction, salary floor, work authorization, and the roles you want auto-rejected. It writes:
+
+| File | What it holds | Who reads it |
+|------|--------------|--------------|
+| `.career-coach/profile/candidate-profile.md` | Education, credentials, work history, skills | `job-fit-evaluator` — *can you get this job?* |
+| `.career-coach/profile/career-blueprint.md` | Direction, role tiers, constraints, anti-patterns | `job-fit-evaluator` — *should you take it?* |
+| `.career-coach/profile/resume-input.json` | Structured master resume | `resume-generator` |
+
+Verify and go:
+
+```bash
 ./career-coach status
 ./career-coach ask "Turn this work history into resume bullets"
 ./career-coach export
 ```
+
+Prefer to fill the templates in by hand, or want to tune the scoring weights? See [`setup/ONBOARDING.md`](setup/ONBOARDING.md).
 
 The CLI stores runtime state under `.career-coach/`. That directory is local application data and is excluded from version control.
 
@@ -45,6 +69,21 @@ Evaluate a new opportunity:
   --role "Data Scientist" \
   --jd-file path/to/job-description.txt
 ```
+
+Discover public job opportunities on LinkedIn (supports flexible search filters):
+
+```bash
+./career-coach discover \
+  --keywords "Actuarial Analyst" \
+  --location "New York, NY" \
+  --jobage 1 \
+  --experience-level "entry,associate" \
+  --remote "hybrid" \
+  --limit 10
+```
+
+Supported `--experience-level` values: `internship` (1), `entry` (2), `associate` (3), `mid_senior` (4), `director` (5), `executive` (6). Combine with commas (e.g. `entry,associate`).
+Supported `--remote` values: `onsite`, `hybrid`, `remote`.
 
 Start interview preparation after an interview is scheduled:
 
@@ -62,6 +101,12 @@ Review an interview transcript:
   --company "Example Company" \
   --role "Data Scientist" \
   --transcript-file path/to/interview-transcript.txt
+```
+
+Already tracking applications in a spreadsheet? Import them (deduplicated by company/role/JD fingerprint, so re-running is safe):
+
+```bash
+python scripts/migrate_from_csv.py path/to/applications.csv
 ```
 
 View or update the tracker:
@@ -100,17 +145,31 @@ The Agent does not contain provider API keys and does not directly automate brow
 ## Repository layout
 
 ```text
-career-coach             CLI entry point
-career_agent/             Agent, state, tracker, workflow, and provider code
-agents-skill/             Reusable Agent skill definition
-tests/                    Node.js built-in test suite
-docs/superpowers/         Design and implementation documents
-.env.example              Optional environment variable reference
+career-coach                          CLI entry point
+career_agent/                         Agent, state, tracker, workflow, and provider code
+agents-skill/
+  career-profile-builder/             Interviews you and writes your profile files
+  job-fit-evaluator/                  Dual-dimension job scoring methodology
+  resume-generator/                   Resume tailoring contract and one-page rules
+  career-coach-agent/                 Top-level skill entry point
+setup/
+  ONBOARDING.md                       How to build your own profile
+  templates/                          Blank profile, blueprint, and resume templates
+scripts/migrate_from_csv.py           Import an existing application spreadsheet
+tests/                                Node.js built-in test suite
+docs/superpowers/                     Design and implementation documents
+.env.example                          Optional environment variable reference
 ```
+
+Everything personal lives in `.career-coach/`, which is gitignored.
 
 ## Privacy and security
 
-Runtime sessions, job tracker data, resumes, job descriptions, interview transcripts, and generated artifacts belong in the local `.career-coach/` directory. Do not commit personal career data, employer confidential information, credentials, or API keys. The repository includes `.gitignore` rules for common local-state and secret files, but users should still review staged files before publishing a fork.
+Your profile, runtime sessions, job tracker data, resumes, job descriptions, interview transcripts, and generated artifacts all belong in the local `.career-coach/` directory, which is gitignored in full.
+
+Do not commit personal career data, employer confidential information, credentials, or API keys. The `.gitignore` also blocks `.docx`/`.pdf`/`.xlsx`/`.csv` files and scratch resume JSON anywhere in the tree, but review `git status` before every push to a fork.
+
+The profile files contain contact details, compensation, and work-authorization status. Treat them the way you would treat a passport scan: keep them local, and never paste their contents into a public issue, PR, or shared log.
 
 ## License
 

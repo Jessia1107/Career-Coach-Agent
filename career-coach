@@ -1,4 +1,19 @@
 #!/usr/bin/env node
+
+// Optional convenience: if no provider is configured but a local provider script
+// sits next to this launcher, use it. Provider scripts are not part of the public
+// release, so a fresh clone simply runs without one and returns deterministic
+// scaffolds instead of AI-generated analysis.
+if (!process.env.CAREER_COACH_PROVIDER_COMMAND) {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const localProvider = path.join(__dirname, 'local-provider.js');
+
+  if (fs.existsSync(localProvider)) {
+    process.env.CAREER_COACH_PROVIDER_COMMAND = localProvider;
+  }
+}
+
 require('./career_agent/cli').main().then((code) => {
   process.exitCode = code;
 });
